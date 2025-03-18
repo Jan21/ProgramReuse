@@ -111,7 +111,6 @@ def create_array_manipulations():
     special = {
         'unique_count': lambda arr: [wrap_to_range(arr.count(x)) for x in arr],
         'position_value': lambda arr: [wrap_to_range(x * (i + 1)) for i, x in enumerate(arr)],
-        'distance_from_mean': lambda arr: [wrap_to_range(abs(x - sum(arr)/len(arr))) for x in arr],
         'relative_position': lambda arr: [wrap_to_range(sum(1 for y in arr if y < x)) for x in arr],
         'frequency_map': lambda arr: [wrap_to_range(arr.count(x)) for x in arr]
     }
