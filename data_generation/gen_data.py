@@ -214,7 +214,7 @@ def format_to_text(results_dict):
                     operation = f"{function}"
                     
                     # Create the formatted text entry
-                    text_entry = f"input : {formatted_input} ; operation : {group}_{operation} , result : {formatted_result}"
+                    text_entry = f"input ; {formatted_input} ; operation ; {group}_{operation} ; result : {formatted_result}"
                     formatted_examples.append({"text": text_entry})
                     pbar.update(1)
     
@@ -313,7 +313,7 @@ def save_datasets(train_data, test_data, output_dir="./data", prefix=""):
         "test_file": test_file
     }
 
-def run(count=100000, min_length=5, max_length=9, min_val=1, max_val=9,
+def run(count=100000, min_length=5, max_length=9, min_val=-9, max_val=9,
                          test_size=0.2, method='threaded', batch_size=1000, num_threads=None,
                          balance=True, shuffle=True, output_dir="data", prefix="", seed=42):
     """
@@ -400,9 +400,9 @@ if __name__ == "__main__":
         count=80_000,            # Number of arrays to generate
         min_length=5,             # Minimum array length
         max_length=9,             # Maximum array length
-        min_val=1,                # Minimum value in arrays
+        min_val=-9,                # Minimum value in arrays
         max_val=9,                # Maximum value in arrays
-        test_size=0.005,            # Fraction for test set
+        test_size=0.001,            # Fraction for test set
         method='threaded',        # Use threading for better performance
         batch_size=1000,          # Arrays per batch for threaded processing
         num_threads=None,         # Number of threads (None = auto)
