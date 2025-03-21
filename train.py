@@ -193,7 +193,7 @@ class LitLLM(L.LightningModule):
 
 @hydra.main(
     config_path="config",
-    config_name="config_base",
+    config_name="config_concat",
     version_base=None,
 )
 def main(cfg: DictConfig):

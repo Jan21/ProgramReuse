@@ -53,6 +53,6 @@ convert_hf:
   out_path: "temp/hf_${model.name}"
 
 inference:
-  modelpath: "./temp/hf_Pythia-12-8-526-arrays-concat-FS"
+  modelpath: "./temp/hf_Pythia-12-8-256-arrays-concat-FS"
   datapath: ${data.datapath}/test_set/
   batch_size: 2048
