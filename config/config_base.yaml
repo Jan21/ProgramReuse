@@ -16,7 +16,7 @@ data_preprocess:
 tok_data:
   train_file: "data/train.json"
   val_file: "data/test.json"
-  tokenizer_path: "tokenizer/tokenizer.json"
+  tokenizer_path: "tokenizer/tokenizer_base.json"
 
 data:
   datapath: data
@@ -27,18 +27,18 @@ data:
   split_str: ":"
   
 model:
-  name: "Pythia-${model.n_layer}-${model.n_head}-${model.n_embd}-array_ops-3"
+  name: "Pythia-${model.n_layer}-${model.n_head}-${model.n_embd}-arrays-base-NORMAL-LEFT"
   batch_size: 4096
   accumulate_grad_batches: 1
   block_size: 64
-  epochs: 200
+  epochs: 100
   n_layer: 12
   n_head: 8
   n_embd: 256
-  vocab_size: 82
-  padded_vocab_size: 82
-  bos_id: 77
-  eos_id: 81
+  vocab_size: 81
+  padded_vocab_size: 81
+  bos_id: 76
+  eos_id: 80
 
 optim:
   lr: 1e-2
@@ -53,6 +53,6 @@ convert_hf:
   out_path: "temp/hf_${model.name}"
 
 inference:
-  modelpath: "./temp/hf_Pythia-12-8-512-array_ops-2"
+  modelpath: "./temp/hf_Pythia-12-8-256-arrays-base-FS"
   datapath: ${data.datapath}/test_set/
-  batch_size: 128
+  batch_size: 2048

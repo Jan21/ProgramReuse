@@ -1,0 +1,58 @@
+defaults:  
+  - _self_  
+  - override hydra/hydra_logging: disabled  
+  - override hydra/job_logging: disabled  
+  
+hydra:  
+  output_subdir: null  
+  run:  
+    dir: .
+
+data_preprocess:
+  raw_data_path: "../data/solved_problems.pkl"
+  num_test: 2048
+  num_val: 2048
+
+tok_data:
+  train_file: "data/concat_train.json"
+  val_file: "data/concat_test.json"
+  tokenizer_path: "tokenizer/tokenizer_concat.json"
+
+data:
+  datapath: data
+  train_file: "concat_train.json"
+  val_file: "concat_test.json"
+  test_file: "concat_test.json"
+  num_workers: 32
+  split_str: ":"
+  
+model:
+  name: "Pythia-${model.n_layer}-${model.n_head}-${model.n_embd}-arrays-concat-FS"
+  batch_size: 4096
+  accumulate_grad_batches: 1
+  block_size: 64
+  epochs: 50
+  n_layer: 12
+  n_head: 8
+  n_embd: 256
+  vocab_size: 226
+  padded_vocab_size: 226
+  bos_id: 221
+  eos_id: 225
+
+optim:
+  lr: 1e-2
+
+eval:
+  num_examples: ${data_preprocess.num_test}
+  batch_size: 2048
+  results_dir: "data/eval_results/${model.name}"
+
+convert_hf:
+  in_path: "temp/${model.name}"
+  out_path: "temp/hf_${model.name}"
+
+inference:
+  modelpath: "./temp/hf_Pythia-12-8-526-arrays-concat-FS"
+  datapath: ${data.datapath}/test_set/
+  batch_size: 2048

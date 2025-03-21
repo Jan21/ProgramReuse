@@ -16,26 +16,44 @@ def extract_input_arrays(examples):
     """Extract and parse input arrays from the formatted examples"""
     input_arrays = set()
     input_arrays_list = []  # For statistical analysis
+    errors = 0
     
     print("Extracting input arrays...")
     for example in tqdm(examples, desc="Processing examples"):
         text = example["text"]
         
         # Extract the input array part
-        input_start = text.find("input : ") + len("input : ")
+        input_start = text.find("input ; ") + len("input ; ")
         input_end = text.find(" ; operation")
-        input_str = text[input_start:input_end]
-        
-        # Try to parse the array
-        try:
-            # Convert to tuple to make it hashable for the set
-            input_array = tuple(ast.literal_eval(input_str))
-            input_arrays.add(input_array)
-            input_arrays_list.append(input_array)
-        except Exception as e:
-            print(f"Error parsing input array: {input_str}")
-            print(f"Error details: {e}")
+        if input_start >= len("input ; ") and input_end > input_start:
+            input_str = text[input_start:input_end].strip()
+            
+            try:
+                # Strip the brackets and handle spaces properly
+                if input_str.startswith('[') and input_str.endswith(']'):
+                    # Remove brackets and strip outer spaces
+                    cleaned_str = input_str[1:-1].strip()
+                    
+                    # Split by spaces and filter out empty strings
+                    numbers = [num for num in cleaned_str.split() if num]
+                    
+                    # Convert to integers
+                    input_array = tuple(int(num) for num in numbers)
+                    
+                    input_arrays.add(input_array)
+                    input_arrays_list.append(input_array)
+                else:
+                    errors += 1
+                    print(f"Array doesn't have expected brackets: {input_str}")
+            except Exception as e:
+                errors += 1
+                print(f"Error parsing input array: {input_str}")
+                print(f"Error details: {e}")
+        else:
+            errors += 1
+            print(f"Could not find input pattern in: {text[:100]}...")
     
+    print(f"Completed parsing with {errors} errors out of {len(examples)} examples")
     return input_arrays, input_arrays_list
 
 def analyze_arrays(arrays_list):

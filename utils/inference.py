@@ -73,7 +73,7 @@ def calculate_metrics(results_dict, tokenizer):
 
 @hydra.main(
     config_path="../config",
-    config_name="config",
+    config_name="config_base",
     version_base=None,
 )
 def main(cfg: DictConfig):

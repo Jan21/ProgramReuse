@@ -402,13 +402,13 @@ if __name__ == "__main__":
         max_length=9,             # Maximum array length
         min_val=-9,                # Minimum value in arrays
         max_val=9,                # Maximum value in arrays
-        test_size=0.001,            # Fraction for test set
+        test_size=0.004,            # Fraction for test set
         method='threaded',        # Use threading for better performance
         batch_size=1000,          # Arrays per batch for threaded processing
         num_threads=None,         # Number of threads (None = auto)
         balance=True,             # Balance operation counts
         shuffle=True,             # Thoroughly shuffle examples
-        output_dir="../data",        # Output directory
+        output_dir="data",        # Output directory
         prefix="",                # Filename prefix
         seed=42                   # Random seed for reproducibility
     )

@@ -129,8 +129,8 @@ def get_data(cfg: DictConfig, tokenizer):
             "test": val_file,
         },
     )
-
-    hf_dataset["test"] = hf_dataset["test"].select(range(int(128)))
+    # hf_dataset["train"] = hf_dataset["train"].select(range(int(4096)))
+    hf_dataset["test"] = hf_dataset["test"].select(range(int(4096)))
 
     def tokenize(examples):
         texts = [
@@ -166,4 +166,5 @@ def get_tokenizer(tok_data: DictConfig, for_filter: Optional[bool] = False):
     tokenizer.pad_token = "[PAD]"
     tokenizer.mask_token = "[MASK]"
     tokenizer.bos_token = "[BOS]"
+    # tokenizer.pad_token = tokenizer.eos_token
     return tokenizer

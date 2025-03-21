@@ -14,7 +14,7 @@ import os
 
 
 @hydra.main(
-    config_path="../config", config_name="config", version_base=None
+    config_path="../config", config_name="config_base", version_base=None
 )
 def main(cfg: DictConfig):
     vocab = get_vocab(cfg)

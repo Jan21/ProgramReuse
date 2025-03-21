@@ -50,22 +50,17 @@ class LitLLM(L.LightningModule):
         # Find positions with delimiter tokens
         delimiter_positions = (input_ids == self.delimiter_token_id)
         
-        # Create a mask where positions AFTER the delimiter are marked as False
-        # and the delimiter itself and positions before it are marked as True
-        mask = torch.ones_like(input_ids, dtype=torch.bool)
+        # Create a shifted version where positions after delimiter are marked
+        # This will include the delimiter itself as True
+        first_search_pos = torch.zeros_like(input_ids, dtype=torch.bool)
+        first_search_pos[:, 1:] = delimiter_positions.cumsum(dim=1)[:, :-1].bool()
         
-        # For each batch item, find the first delimiter position and create mask
-        for i in range(input_ids.size(0)):
-            delimiter_indices = torch.where(delimiter_positions[i])[0]
-            if delimiter_indices.size(0) > 0:
-                # Get the first delimiter position
-                delimiter_pos = delimiter_indices[0]
-                # Set all positions after the delimiter to False (not masked)
-                # The delimiter itself remains True (masked)
-                mask[i, delimiter_pos:] = False
+        # Create the mask - True for delimiter and positions before it
+        mask = ~first_search_pos.cumsum(dim=1).bool()
         
         # Apply the mask to targets, setting masked positions to -100
         return torch.where(mask, torch.tensor(-100, device=target_ids.device), target_ids)
+
 
     # def mask_targets(self, input_ids, target_ids):
     #     first_search_pos = (input_ids == self.delimiter_token_id).cumsum(dim=1).bool()
@@ -117,6 +112,7 @@ class LitLLM(L.LightningModule):
     
     def on_validation_epoch_end(self):
         test = self.trainer.datamodule.dataset["test"]
+        # print(test["input_ids"])
 
         save_path = self.cfg.convert_hf.in_path
         self.llm.model.to(self.llm.preprocessor.device)
@@ -197,7 +193,7 @@ class LitLLM(L.LightningModule):
 
 @hydra.main(
     config_path="config",
-    config_name="config",
+    config_name="config_base",
     version_base=None,
 )
 def main(cfg: DictConfig):
@@ -224,18 +220,19 @@ def main(cfg: DictConfig):
     data.connect(max_seq_length=cfg.model.block_size)
     data.setup()
     train_size = len(data.train_dataloader())
+    # print(data.train_dataset["input_ids"])
     trace_start_token_id = tokenizer.encode(cfg.data.split_str, add_special_tokens=False)[0]
 
     lit_model = LitLLM(model=model, cfg=cfg, train_batches=train_size, preprocessor=preprocessor,
                        delimiter_token_id=trace_start_token_id)
 
     logger = WandbLogger(
-        project="arrays", name=f"{cfg.model.name}", config=wandb_config
+        project="arrays_lumi", name=f"{cfg.model.name}", config=wandb_config
     )
 
     checkpoint_callback = ModelCheckpoint(
         monitor="acc",  # what metric to track
-        dirpath=f"temp/{cfg.model.name}/checkpoints",  # where to save checkpoints
+        dirpath=f"temp/checkpoints/{cfg.model.name}",  # where to save checkpoints
         filename="{epoch:02d}-{acc:.4f}",  # how to name checkpoints
         save_top_k=2,  # save top 3 models
         mode="max",  # lower val_loss is better

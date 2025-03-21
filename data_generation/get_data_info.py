@@ -1,7 +1,11 @@
-from data import *
+import os
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+import sys
+sys.path.append(project_root)
+
+from utils.data import *
 import math
 import json
-import os
 from transformers import AutoTokenizer, PreTrainedTokenizerFast
 import hydra
 from omegaconf import DictConfig, OmegaConf
@@ -9,7 +13,7 @@ import numpy as np
 
 @hydra.main(
     config_path="../config",
-    config_name="config",
+    config_name="config_comma",
     version_base=None,
 )
 def main(cfg: DictConfig):
